@@ -109,8 +109,9 @@
             <input
                 id="paymentDueDate"
                 v-model="paymentDueDate"
-                disabled
-                type="text"
+                :min="minDate"
+                required
+                type="date"
             />
           </div>
         </div>
@@ -252,7 +253,18 @@ export default {
       },
 
       loading: null,
+
+      minDate: null,
     };
+  },
+
+  mounted() {
+    // Get the current date
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    this.minDate = `${yyyy}-${mm}-${dd}`;
   },
 
   created() {
@@ -331,11 +343,16 @@ export default {
     },
 
     publishInvoice() {
+      if (this.paymentDueDate === null) {
+        return;
+      }
       this.invoicePending = true;
+      this.createInvoice();
     },
 
     saveDraft() {
       this.invoiceDraft = true;
+      this.createInvoice();
     },
 
     calcInvoiceTotal() {
@@ -345,7 +362,7 @@ export default {
     },
 
     async createInvoice() {
-      if (this.invoiceItemList.length === 0) {
+      if (this.invoiceItemList.length === 0 && !this.invoiceDraft) {
         alert("Please ensure you have at least one item in your invoice.");
         return;
       }
@@ -354,21 +371,6 @@ export default {
 
       this.calcInvoiceTotal();
 
-      // create an invoice through this endpoint
-      // http://localhost:8090/api/v1/invoices/new
-      /*
-        {
-          "invoiceStatus": "PAID",
-          "clientName": "John Doe",
-          "clientEmail": "doe@mail.com",
-          "clientStreetAddress": "123 Fake Street",
-          "clientCity": "Fake City",
-          "clientZipCode": "20100",
-          "clientCountry": "Kenya",
-          "dueDate": "2021-12-10",
-          "notes": "Anonymous"
-        }
-      */
       let invoiceStatus = "";
       if (this.invoicePending) {
         invoiceStatus = "PENDING";
@@ -394,73 +396,51 @@ export default {
           dueDate: this.paymentDueDate,
           notes: this.invoiceNotes,
         }),
-      }).then((res) => {
-        if (res.ok) {
-          console.log("Success");
-        } else {
-          console.log("Failed");
-        }
-        this.loading = false;
-        this.TOGGLE_INVOICE_MODAL();
-      });
+      })
+          .then(async (invoiceResponse) => {
+            const invoiceId = await invoiceResponse.json();
+            // Iterate through the invoiceItemList and create the product items in the database
+            for (const item of this.invoiceItemList) {
+              if (
+                  item.name === "" ||
+                  item.quantity === "" ||
+                  item.unitPrice === ""
+              ) {
+                continue;
+              }
+              fetch(`http://localhost:8090/api/v1/products/new`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  name: item.name,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  invoiceId: invoiceId,
+                }),
+              }).then((r) => {
+                if (!r.ok) {
+                  console.error("Failed to create product");
+                } else {
+                  console.log("Product created successfully");
+                }
+                this.loading = false;
+                // FIXME: find a better way
+                window.location.reload();
+              });
+            }
+
+            console.log("Invoice and products created successfully");
+          })
+          .finally(() => {
+            this.loading = false;
+            // FIXME: find a better way for this
+            window.location.reload();
+          });
     },
-
-    async uploadInvoice() {
-      if (this.invoiceItemList.length === 0) {
-        alert("Please ensure you have at least one item in your invoice.");
-        return;
-      }
-
-      this.loading = true;
-
-      this.calcInvoiceTotal();
-      // data model of firebase: collection -> document -> data
-      // const ref = db.collection("invoices");
-      // await ref.add({
-      //   invoiceId: uid(6), // 6-character random string
-      //   billerStreetAddress: this.billerStreetAddress,
-      //   billerCity: this.billerCity,
-      //   billerZipCode: this.billerZipCode,
-      //   billerCountry: this.billerCountry,
-      //   clientName: this.clientName,
-      //   clientEmail: this.clientEmail,
-      //   clientStreetAddress: this.clientStreetAddress,
-      //   clientCity: this.clientCity,
-      //   clientZipCode: this.clientZipCode,
-      //   clientCountry: this.clientCountry,
-      //   invoiceDate: this.invoiceDate,
-      //   invoiceDateUnix: this.invoiceDateUnix,
-      //   paymentTerms: this.paymentTerms,
-      //   paymentDueDate: this.paymentDueDate,
-      //   paymentDueDateUnix: this.paymentDueDateUnix,
-      //   productDescription: this.productDescription,
-      //   invoiceItemList: this.invoiceItemList,
-      //   invoiceTotal: this.invoiceTotal,
-      //   invoicePending: this.invoicePending,
-      //   invoiceDraft: this.invoiceDraft,
-      //   invoicePaid: null,
-      // });
-
-      await this.GET_INVOICES();
-
-      this.loading = false;
-      this.TOGGLE_INVOICE_MODAL();
-    },
-
-    // The logic of update function (both in database and in the state)
-    // first update the data of invoice in firestore (database)
-    // then delete the invoice in the invoice list (data in the state)
-    // finally get the updated invoice from firestore (database -> data in the state)
 
     async updateInvoice() {
-      console.log(
-          "Ll:",
-          this.invoiceItemList.length,
-          ":",
-          this.invoiceItemList,
-          ":",
-          this
-      );
       if (this.invoiceItemList.length === 0) {
         alert("Please ensure you have at least one item in your invoice.");
         return;
@@ -468,21 +448,8 @@ export default {
       // asynchronously update data through http://localhost:8090/api/v1/invoices/:id
       this.loading = true;
       this.calcInvoiceTotal();
-      /*
-          {
-            "invoiceStatus": "oijio",
-            "clientName": "joiji",
-            "clientEmail": "jioij@some.com",
-            "clientStreetAddress": "mij jiuh ui",
-            "clientCity": "Ohio",
-            "clientZipCode": "987",
-            "clientCountry": "usa",
-            "dueDate": "2021-12-10",
-            "notes": "Okay"
-          }
-       */
-      let invoiceStatus = "";
 
+      let invoiceStatus = "";
       if (this.invoicePending) {
         invoiceStatus = "PENDING";
       } else if (this.invoiceDraft) {
@@ -565,50 +532,10 @@ export default {
       });
     },
 
-    async updateInvoice_Old() {
-      if (this.invoiceItemList.length === 0) {
-        alert("Please ensure you have at least one item in your invoice.");
-        return;
-      }
-
-      this.loading = true;
-
-      this.calcInvoiceTotal();
-
-      // const ref = db.collection("invoices").doc(this.docId);
-
-      // await ref.update({
-      //   billerStreetAddress: this.billerStreetAddress,
-      //   billerCity: this.billerCity,
-      //   billerZipCode: this.billerZipCode,
-      //   billerCountry: this.billerCountry,
-      //   clientName: this.clientName,
-      //   clientEmail: this.clientEmail,
-      //   clientStreetAddress: this.clientStreetAddress,
-      //   clientCity: this.clientCity,
-      //   clientZipCode: this.clientZipCode,
-      //   clientCountry: this.clientCountry,
-      //   paymentTerms: this.paymentTerms,
-      //   paymentDueDate: this.paymentDueDate,
-      //   paymentDueDateUnix: this.paymentDueDateUnix,
-      //   productDescription: this.productDescription,
-      //   invoiceItemList: this.invoiceItemList,
-      //   invoiceTotal: this.invoiceTotal,
-      // });
-
-      const data = {
-        docId: this.docId,
-        routeId: this.$route.params.id,
-      };
-
-      await this.UPDATE_INVOICE(data);
-
-      this.loading = false;
-    },
-
     submitForm() {
       if (!this.edit) {
-        this.uploadInvoice();
+        // this.createInvoice();
+        console.log("Uploading");
       } else {
         this.updateInvoice();
       }

@@ -2,6 +2,7 @@ package com.jetsup.invoices.invoice;
 
 import com.jetsup.invoices.product.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +33,9 @@ public class InvoiceController {
     }
 
     @PostMapping(path = "new")
-    public void createNewInvoice(@RequestBody Invoice invoice) {
-        invoiceService.createNewInvoice(invoice);
+    public ResponseEntity<Long> createNewInvoice(@RequestBody Invoice invoice) {
+        long invoiceId = invoiceService.createNewInvoice(invoice);
+        return ResponseEntity.ok(invoiceId);
     }
 
     @DeleteMapping(path = "{invoiceId}")
@@ -53,6 +55,7 @@ public class InvoiceController {
         String dueDate = requestBody.getDueDate();
         String notes = requestBody.getNotes();
 
+        System.out.println("\t\tSTATUS: " + invoiceStatus);
         invoiceService.updateInvoice(invoiceId, invoiceStatus, clientName, clientEmail, clientStreetAddress, clientCity, clientZipCode, clientCountry, dueDate, notes);
     }
 }

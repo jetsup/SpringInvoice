@@ -50,7 +50,7 @@ public class InvoiceService {
         return invoiceId.toString();
     }
 
-    public void createNewInvoice(Invoice invoice) {
+    public long createNewInvoice(Invoice invoice) {
         String invoiceId = generateInvoiceId();
         Optional<Invoice> dbInvoice = invoiceRepository.findInvoiceByInvoiceId(invoiceId);
 
@@ -64,6 +64,7 @@ public class InvoiceService {
         invoice.setInvoiceId(invoiceId);
         System.out.println(invoiceId + " -> " + invoice);
         invoiceRepository.save(invoice);
+        return invoice.getId();
     }
 
     public void deleteInvoice(long invoiceId) {

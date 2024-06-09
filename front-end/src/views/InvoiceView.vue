@@ -30,14 +30,14 @@
         <button
             v-if="currentInvoice.invoicePending"
             class="green"
-            @click="updateStatusToPaid(currentInvoice.docId)"
+            @click="updateStatusToPaid(currentInvoice.id)"
         >
           Mark As Paid
         </button>
         <button
             v-if="currentInvoice.invoiceDraft || currentInvoice.invoicePaid"
             class="orange"
-            @click="updateStatusToPending(currentInvoice.docId)"
+            @click="updateStatusToPending(currentInvoice.id)"
         >
           Mark as Pending
         </button>
@@ -145,17 +145,18 @@ export default {
       this.TOGGLE_INVOICE_MODAL();
     },
 
-    async deleteInvoice(invoiceId) {
-      await this.DELETE_INVOICE(invoiceId);
-      this.$router.push({name: "Home"});
+    deleteInvoice(invoiceId) {
+      this.DELETE_INVOICE(invoiceId).finally(() => {
+        this.$router.push({name: "Home"});
+      });
     },
 
-    updateStatusToPaid(docId) {
-      this.UPDATE_TO_PAID(docId);
+    updateStatusToPaid(invoiceID) {
+      this.UPDATE_TO_PAID(invoiceID);
     },
 
-    updateStatusToPending(docId) {
-      this.UPDATE_TO_PENDING(docId);
+    updateStatusToPending(invoiceID) {
+      this.UPDATE_TO_PENDING(invoiceID);
     },
   },
 };
