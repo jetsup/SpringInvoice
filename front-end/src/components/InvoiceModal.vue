@@ -10,41 +10,41 @@
       <h1 v-else>Edit Invoice</h1>
 
       <!-- Bill From -->
-      <div class="bill-from flex flex-column">
+      <!-- <div class="bill-from flex flex-column">
         <h4>Bill From</h4>
         <div class="input flex flex-column">
           <label for="billerStreetAddress">Street Address</label>
           <input
-              id="billerStreetAddress"
-              v-model="billerStreetAddress"
-              required
+            id="billerStreetAddress"
+            v-model="billerStreetAddress"
+            required
           />
         </div>
         <div class="location-details flex">
           <div class="input flex flex-column">
             <label for="billerCity">City</label>
-            <input id="billerCity" v-model="billerCity" required type="text"/>
+            <input id="billerCity" v-model="billerCity" required type="text" />
           </div>
           <div class="input flex flex-column">
             <label for="billerZipCode">Zip Code</label>
             <input
-                id="billerZipCode"
-                v-model="billerZipCode"
-                required
-                type="text"
+              id="billerZipCode"
+              v-model="billerZipCode"
+              required
+              type="text"
             />
           </div>
           <div class="input flex flex-column">
             <label for="billerCountry">Country</label>
             <input
-                id="billerCountry"
-                v-model="billerCountry"
-                required
-                type="text"
+              id="billerCountry"
+              v-model="billerCountry"
+              required
+              type="text"
             />
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Bill To -->
       <div class="bill-to flex flex-column">
@@ -114,18 +114,18 @@
             />
           </div>
         </div>
-        <div class="input flex flex-column">
+        <!-- <div class="input flex flex-column">
           <label for="paymentTerms">Payment Terms</label>
           <select id="paymentTerms" v-model="paymentTerms" required>
             <option value="30">Net 30 Days</option>
             <option value="60">Net 60 Days</option>
           </select>
-        </div>
+        </div> -->
         <div class="input flex flex-column">
-          <label for="productDescription">Product Description</label>
+          <label for="invoiceNotes">Notes</label>
           <input
-              id="productDescription"
-              v-model="productDescription"
+              id="invoiceNotes"
+              v-model="invoiceNotes"
               required
               type="text"
           />
@@ -146,16 +146,18 @@
                 class="table-data flex"
             >
               <td class="item-name">
-                <input v-model="item.itemName" type="text"/>
+                <input v-model="item.name" type="text"/>
               </td>
               <td class="quantity">
                 <input v-model="item.quantity" type="text"/>
               </td>
               <td class="price">
-                <input v-model="item.price" type="text"/>
+                <input v-model="item.unitPrice" type="text"/>
               </td>
               <td class="total flex">
-                <span>${{ (item.total = item.quantity * item.price) }}</span>
+                <span
+                >${{ (item.total = item.quantity * item.unitPrice) }}</span
+                >
                 <img
                     alt=""
                     src="../assets/icon-delete.svg"
@@ -207,7 +209,7 @@
 
 <script>
 // import db from "../firebase/firebaseInit";
-import {mapMutations, mapState, mapActions} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 // import { uid } from "uid";
 import Loading from "./Loading.vue";
 
@@ -217,23 +219,25 @@ export default {
   data() {
     return {
       // invoice field
-      docId: null,
-      billerStreetAddress: null,
-      billerCity: null,
-      billerZipCode: null,
-      billerCountry: null,
+      // docId: null,
+      // billerStreetAddress: null,
+      // billerCity: null,
+      // billerZipCode: null,
+      // billerCountry: null,
+      id: null,
       clientName: null,
       clientEmail: null,
       clientStreetAddress: null,
       clientCity: null,
       clientZipCode: null,
       clientCountry: null,
-      invoiceDateUnix: null,
+      // invoiceDateUnix: null,
       invoiceDate: null,
-      paymentTerms: null,
-      paymentDueDateUnix: null,
+      invoiceNotes: null,
+      // paymentTerms: null,
+      // paymentDueDateUnix: null,
       paymentDueDate: null,
-      productDescription: null,
+      // productDescription: null,
       invoicePending: null,
       invoiceDraft: null,
       invoiceItemList: [],
@@ -261,27 +265,20 @@ export default {
       );
     } else {
       const currentInvoice = this.currentInvoice;
-      this.docId = currentInvoice.docId;
-      this.billerStreetAddress = currentInvoice.billerStreetAddress;
-      this.billerCity = currentInvoice.billerCity;
-      this.billerZipCode = currentInvoice.billerZipCode;
-      this.billerCountry = currentInvoice.billerCountry;
+      this.id = currentInvoice.id;
       this.clientName = currentInvoice.clientName;
       this.clientEmail = currentInvoice.clientEmail;
       this.clientStreetAddress = currentInvoice.clientStreetAddress;
       this.clientCity = currentInvoice.clientCity;
       this.clientZipCode = currentInvoice.clientZipCode;
       this.clientCountry = currentInvoice.clientCountry;
-      this.invoiceDateUnix = currentInvoice.invoiceDateUnix;
       this.invoiceDate = currentInvoice.invoiceDate;
-      this.paymentTerms = currentInvoice.paymentTerms;
-      this.paymentDueDateUnix = currentInvoice.paymentDueDateUnix;
       this.paymentDueDate = currentInvoice.paymentDueDate;
-      this.productDescription = currentInvoice.productDescription;
       this.invoicePending = currentInvoice.invoicePending;
       this.invoiceDraft = currentInvoice.invoiceDraft;
       this.invoiceItemList = currentInvoice.invoiceItemList;
       this.invoiceTotal = currentInvoice.invoiceTotal;
+      this.invoiceNotes = currentInvoice.invoiceNotes;
     }
   },
 
@@ -309,10 +306,21 @@ export default {
       });
     },
 
-    deleteInvoiceItem(id) {
+    async deleteInvoiceItem(id) {
       this.invoiceItemList = this.invoiceItemList.filter(
           (item) => item.id !== id
       );
+
+      await fetch(`http://localhost:8090/api/v1/products/${id}`, {
+        method: "DELETE",
+      }).then((res) => {
+        // TODO: show a toast message
+        if (res.ok) {
+          console.log("Success");
+        } else {
+          console.log("Failed");
+        }
+      });
     },
 
     discardInvoice() {
@@ -334,6 +342,67 @@ export default {
       this.invoiceTotal = this.invoiceItemList.reduce((sum, item) => {
         return sum + item.total;
       }, 0);
+    },
+
+    async createInvoice() {
+      if (this.invoiceItemList.length === 0) {
+        alert("Please ensure you have at least one item in your invoice.");
+        return;
+      }
+
+      this.loading = true;
+
+      this.calcInvoiceTotal();
+
+      // create an invoice through this endpoint
+      // http://localhost:8090/api/v1/invoices/new
+      /*
+        {
+          "invoiceStatus": "PAID",
+          "clientName": "John Doe",
+          "clientEmail": "doe@mail.com",
+          "clientStreetAddress": "123 Fake Street",
+          "clientCity": "Fake City",
+          "clientZipCode": "20100",
+          "clientCountry": "Kenya",
+          "dueDate": "2021-12-10",
+          "notes": "Anonymous"
+        }
+      */
+      let invoiceStatus = "";
+      if (this.invoicePending) {
+        invoiceStatus = "PENDING";
+      } else if (this.invoiceDraft) {
+        invoiceStatus = "DRAFT";
+      } else {
+        invoiceStatus = "PAID";
+      }
+
+      await fetch(`http://localhost:8090/api/v1/invoices/new`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          invoiceStatus: invoiceStatus,
+          clientName: this.clientName,
+          clientEmail: this.clientEmail,
+          clientStreetAddress: this.clientStreetAddress,
+          clientCity: this.clientCity,
+          clientZipCode: this.clientZipCode,
+          clientCountry: this.clientCountry,
+          dueDate: this.paymentDueDate,
+          notes: this.invoiceNotes,
+        }),
+      }).then((res) => {
+        if (res.ok) {
+          console.log("Success");
+        } else {
+          console.log("Failed");
+        }
+        this.loading = false;
+        this.TOGGLE_INVOICE_MODAL();
+      });
     },
 
     async uploadInvoice() {
@@ -382,7 +451,121 @@ export default {
     // first update the data of invoice in firestore (database)
     // then delete the invoice in the invoice list (data in the state)
     // finally get the updated invoice from firestore (database -> data in the state)
+
     async updateInvoice() {
+      console.log(
+          "Ll:",
+          this.invoiceItemList.length,
+          ":",
+          this.invoiceItemList,
+          ":",
+          this
+      );
+      if (this.invoiceItemList.length === 0) {
+        alert("Please ensure you have at least one item in your invoice.");
+        return;
+      }
+      // asynchronously update data through http://localhost:8090/api/v1/invoices/:id
+      this.loading = true;
+      this.calcInvoiceTotal();
+      /*
+          {
+            "invoiceStatus": "oijio",
+            "clientName": "joiji",
+            "clientEmail": "jioij@some.com",
+            "clientStreetAddress": "mij jiuh ui",
+            "clientCity": "Ohio",
+            "clientZipCode": "987",
+            "clientCountry": "usa",
+            "dueDate": "2021-12-10",
+            "notes": "Okay"
+          }
+       */
+      let invoiceStatus = "";
+
+      if (this.invoicePending) {
+        invoiceStatus = "PENDING";
+      } else if (this.invoiceDraft) {
+        invoiceStatus = "DRAFT";
+      } else {
+        invoiceStatus = "PAID";
+      }
+
+      await fetch(
+          `http://localhost:8090/api/v1/invoices/${this.$route.params.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              invoiceStatus: invoiceStatus,
+              clientName: this.clientName,
+              clientEmail: this.clientEmail,
+              clientStreetAddress: this.clientStreetAddress,
+              clientCity: this.clientCity,
+              clientZipCode: this.clientZipCode,
+              clientCountry: this.clientCountry,
+              dueDate: this.paymentDueDate,
+              notes: this.invoiceNotes,
+            }),
+          }
+      ).then((res) => {
+        console.log("RES:", res.ok, res.status);
+        if (res.ok) {
+          console.log("Success");
+          // loop through the invoiceItemList and update the items but now update the product's endpoint
+          // http://localhost:8090/api/v1/products/:productId
+          this.invoiceItemList.forEach(async (item) => {
+            if (item.id !== undefined) {
+              await fetch(`http://localhost:8090/api/v1/products/${item.id}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  name: item.name,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                }),
+              }).then((res) => {
+                if (res.ok) {
+                  console.log("Success");
+                } else {
+                  console.log("Failed");
+                }
+                this.loading = false;
+              });
+            } else {
+              await fetch(`http://localhost:8090/api/v1/products/new`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  name: item.name,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  invoiceId: this.$route.params.id,
+                }),
+              }).then((res) => {
+                if (res.ok) {
+                  console.log("Success");
+                } else {
+                  console.log("Failed");
+                }
+                this.loading = false;
+              });
+            }
+          });
+        } else {
+          console.log("Failed");
+          this.loading = false;
+        }
+      });
+    },
+
+    async updateInvoice_Old() {
       if (this.invoiceItemList.length === 0) {
         alert("Please ensure you have at least one item in your invoice.");
         return;

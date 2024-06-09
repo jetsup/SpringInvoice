@@ -1,7 +1,6 @@
-/* eslint-disable */
 <template>
   <router-link
-      :to="{ name: 'Invoice', params: { id: invoice.invoiceId } }"
+      :to="{ name: 'Invoice', params: { id: invoice.id } }"
       class="invoice flex"
   >
     <div class="left flex">

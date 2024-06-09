@@ -24,7 +24,7 @@
 
       <div class="right flex">
         <button class="dark-purple" @click="toggleEdit()">Edit</button>
-        <button class="red" @click="deleteInvoice(currentInvoice.docId)">
+        <button class="red" @click="deleteInvoice(currentInvoice.id)">
           Delete
         </button>
         <button
@@ -95,15 +95,15 @@
               :key="index"
               class="item flex"
           >
-            <p>{{ item.itemName }}</p>
+            <p>{{ item.name }}</p>
             <p>{{ item.quantity }}</p>
-            <p>{{ item.price }}</p>
-            <p>{{ item.total }}</p>
+            <p>{{ item.unitPrice }}</p>
+            <p>{{ item.quantity * item.unitPrice }}</p>
           </div>
         </div>
         <div class="total flex">
           <p>Amount Due</p>
-          <p>${{ currentInvoice.invoiceTotal }}</p>
+          <p>${{ currentInvoice.total }}</p>
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import {mapState, mapMutations, mapActions} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 
 export default {
   name: "InvoiceView",
@@ -145,8 +145,8 @@ export default {
       this.TOGGLE_INVOICE_MODAL();
     },
 
-    async deleteInvoice(docId) {
-      await this.DELETE_INVOICE(docId);
+    async deleteInvoice(invoiceId) {
+      await this.DELETE_INVOICE(invoiceId);
       this.$router.push({name: "Home"});
     },
 

@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
-    @Query("SELECT i FROM Invoice i WHERE i.invoice_id = ?1")
+    @Query("SELECT i FROM Invoice i WHERE i.invoiceId = ?1")
     Optional<Invoice> findInvoiceByInvoiceId(String invoiceId);
 }

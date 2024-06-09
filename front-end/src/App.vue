@@ -16,7 +16,8 @@
           <router-view/>
         </div>
         <div v-else>
-          <LoadingComponent/>
+          <!--          <LoadingComponent />-->
+          No Invoices
         </div>
       </div>
     </div>
@@ -28,11 +29,11 @@
 </template>
 
 <script>
-import {mapState, mapActions} from "vuex";
+import {mapActions, mapState} from "vuex";
 import NavigationComponent from "./components/Navigation.vue";
 import InvoiceModal from "./components/InvoiceModal.vue";
 import ModalComponent from "./components/Modal.vue";
-import LoadingComponent from "./components/Loading.vue";
+// import LoadingComponent from "./components/Loading.vue";
 // import modal from "@/components/Modal.vue";
 
 // import invoiceModal from "@/components/InvoiceModal.vue";
@@ -40,7 +41,7 @@ import LoadingComponent from "./components/Loading.vue";
 export default {
   name: "App",
   components: {
-    LoadingComponent,
+    // LoadingComponent,
     ModalComponent,
     InvoiceModal,
     NavigationComponent,
