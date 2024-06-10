@@ -1,7 +1,7 @@
 <template>
   <header class="flex">
     <div class="branding flex">
-      <img alt="" src="../assets/file-invoice-dollar-solid.svg"/>
+      <img alt="" src="../assets/file-invoice-dollar-solid.svg" />
     </div>
   </header>
 </template>

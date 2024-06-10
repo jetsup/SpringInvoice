@@ -2,18 +2,18 @@
 <template>
   <div>
     <div v-if="!isMobile" class="app flex">
-      <NavigationComponent/>
+      <NavigationComponent />
       <div class="app-content flex flex-column">
         <transition name="modal">
-          <ModalComponent v-if="modal"/>
+          <ModalComponent v-if="modal" />
         </transition>
 
         <transition name="invoice">
-          <invoice-modal v-if="invoiceModal"/>
+          <invoice-modal v-if="invoiceModal" />
         </transition>
 
         <div v-if="invoiceLoaded">
-          <router-view/>
+          <router-view />
         </div>
         <div v-else>
           <!--          <LoadingComponent />-->

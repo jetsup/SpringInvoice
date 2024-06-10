@@ -1,7 +1,7 @@
 <template>
   <router-link
-      :to="{ name: 'Invoice', params: { id: invoice.id } }"
-      class="invoice flex"
+    :to="{ name: 'Invoice', params: { id: invoice.id } }"
+    class="invoice flex"
   >
     <div class="left flex">
       <span class="tracking-number">#{{ invoice.invoiceId }}</span>
@@ -29,7 +29,7 @@
       </template>
 
       <div class="icon">
-        <img alt="" src="../assets/icon-arrow-right.svg"/>
+        <img alt="" src="../assets/icon-arrow-right.svg" />
       </div>
     </div>
   </router-link>

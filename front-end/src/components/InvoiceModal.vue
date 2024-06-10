@@ -1,92 +1,55 @@
 <template>
   <div
-      ref="invoiceWrapper"
-      class="invoice-wrapper flex flex-column"
-      @click="checkClick"
+    ref="invoiceWrapper"
+    class="invoice-wrapper flex flex-column"
+    @click="checkClick"
   >
     <form class="invoice-content" @submit.prevent="submitForm">
-      <Loading v-show="loading"/>
+      <Loading v-show="loading" />
       <h1 v-if="!edit">New Invoice</h1>
       <h1 v-else>Edit Invoice</h1>
-
-      <!-- Bill From -->
-      <!-- <div class="bill-from flex flex-column">
-        <h4>Bill From</h4>
-        <div class="input flex flex-column">
-          <label for="billerStreetAddress">Street Address</label>
-          <input
-            id="billerStreetAddress"
-            v-model="billerStreetAddress"
-            required
-          />
-        </div>
-        <div class="location-details flex">
-          <div class="input flex flex-column">
-            <label for="billerCity">City</label>
-            <input id="billerCity" v-model="billerCity" required type="text" />
-          </div>
-          <div class="input flex flex-column">
-            <label for="billerZipCode">Zip Code</label>
-            <input
-              id="billerZipCode"
-              v-model="billerZipCode"
-              required
-              type="text"
-            />
-          </div>
-          <div class="input flex flex-column">
-            <label for="billerCountry">Country</label>
-            <input
-              id="billerCountry"
-              v-model="billerCountry"
-              required
-              type="text"
-            />
-          </div>
-        </div>
-      </div> -->
 
       <!-- Bill To -->
       <div class="bill-to flex flex-column">
         <h4>Bill To</h4>
         <div class="input flex flex-column">
           <label for="clientName">Client's Name</label>
-          <input id="clientName" v-model="clientName" required type="text"/>
+          <input id="clientName" v-model="clientName" required type="text" />
         </div>
         <div class="input flex flex-column">
           <label for="clientEmail">Client's Email</label>
-          <input id="clientEmail" v-model="clientEmail" required type="text"/>
+          <input id="clientEmail" v-model="clientEmail" required type="text" />
         </div>
         <div class="input flex flex-column">
           <label for="clientStreetAddress">Street Address</label>
           <input
-              id="clientStreetAddress"
-              v-model="clientStreetAddress"
-              required
-              type="text"
+            id="clientStreetAddress"
+            v-model="clientStreetAddress"
+            required
+            type="text"
           />
         </div>
         <div class="location-details flex">
           <div class="input flex flex-column">
             <label for="clientCity">City</label>
-            <input id="clientCity" v-model="clientCity" required type="text"/>
+            <input id="clientCity" v-model="clientCity" required type="text" />
           </div>
           <div class="input flex flex-column">
             <label for="clientZipCode">Zip Code</label>
             <input
-                id="clientZipCode"
-                v-model="clientZipCode"
-                required
-                type="text"
+              id="clientZipCode"
+              v-model="clientZipCode"
+              required
+              type="text"
             />
           </div>
           <div class="input flex flex-column">
             <label for="clientCountry">Country</label>
             <input
-                id="clientCountry"
-                v-model="clientCountry"
-                required
-                type="text"
+              id="clientCountry"
+              v-model="clientCountry"
+              required
+              type="text"
             />
           </div>
         </div>
@@ -98,37 +61,31 @@
           <div class="input flex flex-column">
             <label for="invoiceDate">Invoice Date</label>
             <input
-                id="invoiceDate"
-                v-model="invoiceDate"
-                disabled
-                type="text"
+              id="invoiceDate"
+              v-model="invoiceDate"
+              disabled
+              type="text"
             />
           </div>
           <div class="input flex flex-column">
             <label for="paymentDueDate">Payment Due</label>
             <input
-                id="paymentDueDate"
-                v-model="paymentDueDate"
-                :min="minDate"
-                required
-                type="date"
+              id="paymentDueDate"
+              v-model="paymentDueDate"
+              :min="minDate"
+              required
+              type="date"
             />
           </div>
         </div>
-        <!-- <div class="input flex flex-column">
-          <label for="paymentTerms">Payment Terms</label>
-          <select id="paymentTerms" v-model="paymentTerms" required>
-            <option value="30">Net 30 Days</option>
-            <option value="60">Net 60 Days</option>
-          </select>
-        </div> -->
+
         <div class="input flex flex-column">
           <label for="invoiceNotes">Notes</label>
           <input
-              id="invoiceNotes"
-              v-model="invoiceNotes"
-              required
-              type="text"
+            id="invoiceNotes"
+            v-model="invoiceNotes"
+            required
+            type="text"
           />
         </div>
 
@@ -142,27 +99,27 @@
               <th class="total">Total</th>
             </tr>
             <tr
-                v-for="item in invoiceItemList"
-                :key="item.id"
-                class="table-data flex"
+              v-for="item in invoiceItemList"
+              :key="item.id"
+              class="table-data flex"
             >
               <td class="item-name">
-                <input v-model="item.name" type="text"/>
+                <input v-model="item.name" type="text" />
               </td>
               <td class="quantity">
-                <input v-model="item.quantity" type="text"/>
+                <input v-model="item.quantity" type="text" />
               </td>
               <td class="price">
-                <input v-model="item.unitPrice" type="text"/>
+                <input v-model="item.unitPrice" type="text" />
               </td>
               <td class="total flex">
                 <span
-                >${{ (item.total = item.quantity * item.unitPrice) }}</span
+                  >${{ (item.total = item.quantity * item.unitPrice) }}</span
                 >
                 <img
-                    alt=""
-                    src="../assets/icon-delete.svg"
-                    @click="deleteInvoiceItem(item.id)"
+                  alt=""
+                  src="../assets/icon-delete.svg"
+                  @click="deleteInvoiceItem(item.id)"
                 />
               </td>
             </tr>
@@ -171,9 +128,9 @@
           <div class="flex button" @click="addInvoiceItem">
             <svg height="11" width="11" xmlns="http://www.w3.org/2000/svg">
               <path
-                  d="M6.313 10.023v-3.71h3.71v-2.58h-3.71V.023h-2.58v3.71H.023v2.58h3.71v3.71z"
-                  fill="white"
-                  fill-rule="nonzero"
+                d="M6.313 10.023v-3.71h3.71v-2.58h-3.71V.023h-2.58v3.71H.023v2.58h3.71v3.71z"
+                fill="white"
+                fill-rule="nonzero"
               />
             </svg>
             Add New Item
@@ -181,7 +138,7 @@
         </div>
       </div>
 
-      <hr/>
+      <hr />
 
       <!-- Save/Discard -->
       <div class="save flex">
@@ -216,15 +173,9 @@ import Loading from "./Loading.vue";
 
 export default {
   name: "InvoiceModal",
-  components: {Loading},
+  components: { Loading },
   data() {
     return {
-      // invoice field
-      // docId: null,
-      // billerStreetAddress: null,
-      // billerCity: null,
-      // billerZipCode: null,
-      // billerCountry: null,
       id: null,
       clientName: null,
       clientEmail: null,
@@ -232,13 +183,9 @@ export default {
       clientCity: null,
       clientZipCode: null,
       clientCountry: null,
-      // invoiceDateUnix: null,
       invoiceDate: null,
       invoiceNotes: null,
-      // paymentTerms: null,
-      // paymentDueDateUnix: null,
       paymentDueDate: null,
-      // productDescription: null,
       invoicePending: null,
       invoiceDraft: null,
       invoiceItemList: [],
@@ -272,8 +219,8 @@ export default {
       // get current date for invoice date field
       this.invoiceDateUnix = Date.now();
       this.invoiceDate = new Date(this.invoiceDateUnix).toLocaleDateString(
-          "en-us",
-          this.dateOptions
+        "en-us",
+        this.dateOptions
       );
     } else {
       const currentInvoice = this.currentInvoice;
@@ -320,7 +267,7 @@ export default {
 
     async deleteInvoiceItem(id) {
       this.invoiceItemList = this.invoiceItemList.filter(
-          (item) => item.id !== id
+        (item) => item.id !== id
       );
 
       await fetch(`http://localhost:8090/api/v1/products/${id}`, {
@@ -397,47 +344,47 @@ export default {
           notes: this.invoiceNotes,
         }),
       })
-          .then(async (invoiceResponse) => {
-            const invoiceId = await invoiceResponse.json();
-            // Iterate through the invoiceItemList and create the product items in the database
-            for (const item of this.invoiceItemList) {
-              if (
-                  item.name === "" ||
-                  item.quantity === "" ||
-                  item.unitPrice === ""
-              ) {
-                continue;
-              }
-              fetch(`http://localhost:8090/api/v1/products/new`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  name: item.name,
-                  quantity: item.quantity,
-                  unitPrice: item.unitPrice,
-                  invoiceId: invoiceId,
-                }),
-              }).then((r) => {
-                if (!r.ok) {
-                  console.error("Failed to create product");
-                } else {
-                  console.log("Product created successfully");
-                }
-                this.loading = false;
-                // FIXME: find a better way
-                window.location.reload();
-              });
+        .then(async (invoiceResponse) => {
+          const invoiceId = await invoiceResponse.json();
+          // Iterate through the invoiceItemList and create the product items in the database
+          for (const item of this.invoiceItemList) {
+            if (
+              item.name === "" ||
+              item.quantity === "" ||
+              item.unitPrice === ""
+            ) {
+              continue;
             }
+            fetch(`http://localhost:8090/api/v1/products/new`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: item.name,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                invoiceId: invoiceId,
+              }),
+            }).then((r) => {
+              if (!r.ok) {
+                console.error("Failed to create product");
+              } else {
+                console.log("Product created successfully");
+              }
+              this.loading = false;
+              // FIXME: find a better way
+              window.location.reload();
+            });
+          }
 
-            console.log("Invoice and products created successfully");
-          })
-          .finally(() => {
-            this.loading = false;
-            // FIXME: find a better way for this
-            window.location.reload();
-          });
+          console.log("Invoice and products created successfully");
+        })
+        .finally(() => {
+          this.loading = false;
+          // FIXME: find a better way for this
+          window.location.reload();
+        });
     },
 
     async updateInvoice() {
@@ -459,24 +406,24 @@ export default {
       }
 
       await fetch(
-          `http://localhost:8090/api/v1/invoices/${this.$route.params.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              invoiceStatus: invoiceStatus,
-              clientName: this.clientName,
-              clientEmail: this.clientEmail,
-              clientStreetAddress: this.clientStreetAddress,
-              clientCity: this.clientCity,
-              clientZipCode: this.clientZipCode,
-              clientCountry: this.clientCountry,
-              dueDate: this.paymentDueDate,
-              notes: this.invoiceNotes,
-            }),
-          }
+        `http://localhost:8090/api/v1/invoices/${this.$route.params.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            invoiceStatus: invoiceStatus,
+            clientName: this.clientName,
+            clientEmail: this.clientEmail,
+            clientStreetAddress: this.clientStreetAddress,
+            clientCity: this.clientCity,
+            clientZipCode: this.clientZipCode,
+            clientCountry: this.clientCountry,
+            dueDate: this.paymentDueDate,
+            notes: this.invoiceNotes,
+          }),
+        }
       ).then((res) => {
         console.log("RES:", res.ok, res.status);
         if (res.ok) {
@@ -545,9 +492,9 @@ export default {
   watch: {
     paymentTerms() {
       this.paymentDueDateUnix =
-          this.invoiceDateUnix + this.paymentTerms * 24 * 60 * 60 * 1000;
+        this.invoiceDateUnix + this.paymentTerms * 24 * 60 * 60 * 1000;
       this.paymentDueDate = new Date(
-          this.paymentDueDateUnix
+        this.paymentDueDateUnix
       ).toLocaleDateString("en-us", this.dateOptions);
     },
   },
@@ -582,7 +529,7 @@ export default {
   color: white;
   background-color: #141625;
   box-shadow: 10px 4px 6px -1px rgba(0, 0, 0, 0.2),
-  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
   h1 {
     font-size: 24px;

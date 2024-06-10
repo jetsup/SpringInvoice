@@ -1,7 +1,7 @@
 <template>
   <div v-if="currentInvoice" class="invoice-view container">
     <router-link :to="{ name: 'Home' }" class="nav-link flex">
-      <img alt="" src="../assets/icon-arrow-left.svg"/> Go Back
+      <img alt="" src="../assets/icon-arrow-left.svg" /> Go Back
     </router-link>
 
     <!-- Header -->
@@ -9,12 +9,12 @@
       <div class="left flex">
         <span>Status</span>
         <div
-            :class="{
+          :class="{
             paid: currentInvoice.invoicePaid,
             draft: currentInvoice.invoiceDraft,
             pending: currentInvoice.invoicePending,
           }"
-            class="status-button flex"
+          class="status-button flex"
         >
           <template v-if="currentInvoice.invoicePaid">Paid</template>
           <template v-else-if="currentInvoice.invoiceDraft">Draft</template>
@@ -28,16 +28,16 @@
           Delete
         </button>
         <button
-            v-if="currentInvoice.invoicePending"
-            class="green"
-            @click="updateStatusToPaid(currentInvoice.id)"
+          v-if="currentInvoice.invoicePending"
+          class="green"
+          @click="updateStatusToPaid(currentInvoice.id)"
         >
           Mark As Paid
         </button>
         <button
-            v-if="currentInvoice.invoiceDraft || currentInvoice.invoicePaid"
-            class="orange"
-            @click="updateStatusToPending(currentInvoice.id)"
+          v-if="currentInvoice.invoiceDraft || currentInvoice.invoicePaid"
+          class="orange"
+          @click="updateStatusToPending(currentInvoice.id)"
         >
           Mark as Pending
         </button>
@@ -91,9 +91,9 @@
             <p>Total</p>
           </div>
           <div
-              v-for="(item, index) in currentInvoice.invoiceItemList"
-              :key="index"
-              class="item flex"
+            v-for="(item, index) in currentInvoice.invoiceItemList"
+            :key="index"
+            class="item flex"
           >
             <p>{{ item.name }}</p>
             <p>{{ item.quantity }}</p>
@@ -147,7 +147,7 @@ export default {
 
     deleteInvoice(invoiceId) {
       this.DELETE_INVOICE(invoiceId).finally(() => {
-        this.$router.push({name: "Home"});
+        this.$router.push({ name: "Home" });
       });
     },
 

@@ -10,19 +10,19 @@
       <div class="right flex">
         <div ref="filter" class="filter flex" @click="toggleFilterMenu">
           <span
-          >Filter By Status:
+            >Filter By Status:
             <span
-                :class="{
+              :class="{
                 'green-font': filterOption === 'Paid',
                 'orange-font': filterOption === 'Pending',
                 'gray-font': filterOption === 'Draft',
               }"
-                class="option"
+              class="option"
             >
               {{ filterOption }}
             </span>
           </span>
-          <img alt="" src="../assets/icon-arrow-down.svg"/>
+          <img alt="" src="../assets/icon-arrow-down.svg" />
           <ul v-show="filterMenu" class="filter-menu">
             <li @click="filterInvoices">Draft</li>
             <li @click="filterInvoices">Pending</li>
@@ -34,7 +34,7 @@
         <div class="new button flex" @click="newInvoice">
           <div></div>
           <div class="img-wrapper flex">
-            <img alt="" src="../assets/icon-plus.svg"/>
+            <img alt="" src="../assets/icon-plus.svg" />
           </div>
           <span>New Invoice</span>
         </div>
@@ -44,14 +44,14 @@
     <!-- Invoice -->
     <div v-if="invoiceData.length > 0">
       <Invoice
-          v-for="(invoice, index) in filteredInvoices"
-          :key="index"
-          :invoice="invoice"
+        v-for="(invoice, index) in filteredInvoices"
+        :key="index"
+        :invoice="invoice"
       />
     </div>
 
     <div v-else class="empty flex flex-column">
-      <img alt="" src="../assets/illustration-empty.svg"/>
+      <img alt="" src="../assets/illustration-empty.svg" />
       <h3>There is nothing here</h3>
       <p>
         Create a new invoice by clicking the <strong>New Invoice</strong> button
@@ -62,12 +62,12 @@
 </template>
 
 <script>
-import {mapMutations, mapState, mapActions} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 import Invoice from "../components/Invoice.vue";
 
 export default {
   name: "HomeView",
-  components: {Invoice},
+  components: { Invoice },
   data() {
     return {
       filterMenu: false,
@@ -105,19 +105,19 @@ export default {
     filterInvoices(e) {
       if (e.target.innerText === "Draft") {
         this.filteredInvoices = this.invoiceData.filter(
-            (invoice) => invoice.invoiceDraft
+          (invoice) => invoice.invoiceDraft
         );
         this.filterOption = "Draft";
       }
       if (e.target.innerText === "Pending") {
         this.filteredInvoices = this.invoiceData.filter(
-            (invoice) => invoice.invoicePending
+          (invoice) => invoice.invoicePending
         );
         this.filterOption = "Pending";
       }
       if (e.target.innerText === "Paid") {
         this.filteredInvoices = this.invoiceData.filter(
-            (invoice) => invoice.invoicePaid
+          (invoice) => invoice.invoicePaid
         );
         this.filterOption = "Paid";
       }
@@ -190,7 +190,7 @@ export default {
         list-style: none;
         background-color: #1e2139;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
         li {
           pointer-events: auto;
